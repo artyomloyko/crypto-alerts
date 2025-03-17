@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { Layout } from './components/layout'
-import { MonitorPage } from './pages/monitor-page'
-import { AlertsPage } from './pages/alerts-page'
+import MonitorPage from './pages/monitor'
+import AlertsPage from './pages/alerts'
 
 export const router = createBrowserRouter(
   [
