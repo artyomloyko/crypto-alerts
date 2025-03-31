@@ -7,7 +7,7 @@ import { useWebSocket } from '../context/websocket'
 
 export function MainNav() {
   const location = useLocation()
-  const { isConnected, connect, disconnect } = useWebSocket()
+  const { isSubscribed, subscribe, unsubscribe } = useWebSocket()
 
   return (
     <div className='border-b'>
@@ -37,10 +37,10 @@ export function MainNav() {
           </Link>
         </nav>
         <Button
-          onClick={isConnected ? disconnect : connect}
-          variant={isConnected ? 'destructive' : 'default'}
+          onClick={isSubscribed ? unsubscribe : subscribe}
+          variant={isSubscribed ? 'destructive' : 'default'}
         >
-          {isConnected ? 'Stop Stream' : 'Start Stream'}
+          {isSubscribed ? 'Stop Stream' : 'Start Stream'}
         </Button>
       </div>
     </div>

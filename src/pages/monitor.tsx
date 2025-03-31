@@ -4,7 +4,7 @@ import { cn, safeFormatDistance } from '../lib/utils'
 import { useOrders } from '@/context/orders'
 
 export default function MonitorPage() {
-  const { isConnected } = useWebSocket()
+  const { isSubscribed } = useWebSocket()
   const { orders } = useOrders()
   const { alerts } = useAlerts()
 
@@ -16,7 +16,7 @@ export default function MonitorPage() {
     <div className='container mx-auto p-4'>
       <h1 className='text-2xl font-bold mb-4'>Order Monitor</h1>
 
-      {!isConnected && (
+      {!isSubscribed && (
         <div className='bg-muted p-4 rounded-md mb-4'>
           <p>
             Stream is not connected. Click "Start Stream" to begin monitoring.
@@ -27,7 +27,7 @@ export default function MonitorPage() {
       <div className='bg-black text-green-400 font-mono p-4 rounded-md h-[calc(100vh-200px)] overflow-y-auto'>
         {orders.length === 0 ? (
           <div className='text-center py-8'>
-            {isConnected ? 'Waiting for orders...' : 'Connect to see orders'}
+            {isSubscribed ? 'Waiting for orders...' : 'Connect to see orders'}
           </div>
         ) : (
           <div className='space-y-1'>

@@ -13,16 +13,16 @@ const API_KEY = import.meta.env.VITE_CRYPTO_COMPARE_API_KEY
 const URL = `wss://streamer.cryptocompare.com/v2?api_key=${API_KEY}`
 
 interface WebSocketContextType {
-  isConnected: boolean
-  connect: () => void
-  disconnect: () => void
+  isSubscribed: boolean
+  subscribe: () => void
+  unsubscribe: () => void
 }
 
 const WebSocketContext = createContext<WebSocketContextType | null>(null)
 
 export function WebSocketProvider({ children }: { children: ReactNode }) {
   const [socket, setSocket] = useState<WebSocket | null>(null)
-  const [isConnected, setIsConnected] = useState(false)
+  const [isSubscribed, setIsSubscribed] = useState(false)
   const { checkAndAddOrder } = useOrders()
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const connect = useCallback(() => {
+  const subscribe = useCallback(() => {
     if (!socket) return
 
     const subRequest = {
@@ -68,10 +68,10 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       subs: Subs,
     }
     socket.send(JSON.stringify(subRequest))
-    setIsConnected(true)
+    setIsSubscribed(true)
   }, [socket])
 
-  const disconnect = useCallback(() => {
+  const unsubscribe = useCallback(() => {
     if (!socket) return
 
     const subRequest = {
@@ -79,13 +79,11 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       subs: Subs,
     }
     socket.send(JSON.stringify(subRequest))
-    setIsConnected(false)
+    setIsSubscribed(false)
   }, [socket])
 
   return (
-    <WebSocketContext.Provider
-      value={{ isConnected, connect, disconnect }}
-    >
+    <WebSocketContext.Provider value={{ isSubscribed, subscribe, unsubscribe }}>
       {children}
     </WebSocketContext.Provider>
   )

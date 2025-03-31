@@ -12,7 +12,7 @@ import { AlertTable } from '@/components/alert-table'
 
 export default function AlertsPage() {
   const { alerts, alertCounts } = useAlerts()
-  const { isConnected } = useWebSocket()
+  const { isSubscribed } = useWebSocket()
 
   const cheapAlerts = alerts.filter((alert) => alert.type === 'cheap')
   const solidAlerts = alerts.filter((alert) => alert.type === 'solid')
@@ -22,7 +22,7 @@ export default function AlertsPage() {
     <div className='container mx-auto p-4'>
       <h1 className='text-2xl font-bold mb-4'>Alerts Dashboard</h1>
 
-      {!isConnected && (
+      {!isSubscribed && (
         <div className='bg-muted p-4 rounded-md mb-4'>
           <p>
             Stream is not connected. Click "Start Stream" to begin monitoring
