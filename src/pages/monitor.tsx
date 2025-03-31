@@ -1,28 +1,15 @@
-import { useWebSocket } from '../context/websocket-context'
-import { useAlerts } from '../context/alerts-context'
-import { cn } from '../lib/utils'
-import { formatDistanceToNow } from 'date-fns'
+import { useWebSocket } from '../context/websocket'
+import { useAlerts } from '../context/alerts'
+import { cn, safeFormatDistance } from '../lib/utils'
+import { useOrders } from '@/context/orders'
 
 export default function MonitorPage() {
-  const { orders, isConnected } = useWebSocket()
+  const { isConnected } = useWebSocket()
+  const { orders } = useOrders()
   const { alerts } = useAlerts()
 
   const isAlerted = (orderId: string) => {
-    return alerts.some(
-      (alert) =>
-        alert.id === `cheap-${orderId}` ||
-        alert.id === `solid-${orderId}` ||
-        alert.id === `big-${orderId}`
-    )
-  }
-
-  const safeFormatDistance = (timestamp: number) => {
-    try {
-      return formatDistanceToNow(timestamp, { addSuffix: true })
-    } catch (error) {
-      console.error('Error formatting date:', error, timestamp)
-      return 'recently'
-    }
+    return alerts.some((alert) => alert.id === orderId)
   }
 
   return (
@@ -44,9 +31,9 @@ export default function MonitorPage() {
           </div>
         ) : (
           <div className='space-y-1'>
-            {orders.map((order, idx) => (
+            {orders.map((order) => (
               <div
-                key={idx}
+                key={order.id}
                 className={cn(
                   'py-1 border-b border-gray-800',
                   isAlerted(order.id) ? 'bg-red-900/30 text-white' : '',

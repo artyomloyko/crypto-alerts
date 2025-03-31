@@ -1,5 +1,5 @@
-import { useAlerts } from '../context/alerts-context'
-import { useWebSocket } from '../context/websocket-context'
+import { useAlerts } from '../context/alerts'
+import { useWebSocket } from '../context/websocket'
 import {
   Card,
   CardContent,
@@ -8,15 +8,15 @@ import {
   CardTitle,
 } from '../components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
-import { formatDistanceToNow } from 'date-fns'
+import { AlertTable } from '@/components/alert-table'
 
 export default function AlertsPage() {
   const { alerts, alertCounts } = useAlerts()
   const { isConnected } = useWebSocket()
 
-  const cheapAlerts = alerts.filter((alert) => alert.rule === 'cheapOrder')
-  const solidAlerts = alerts.filter((alert) => alert.rule === 'solidOrder')
-  const bigBiznisAlerts = alerts.filter((alert) => alert.rule === 'bigBiznis')
+  const cheapAlerts = alerts.filter((alert) => alert.type === 'cheap')
+  const solidAlerts = alerts.filter((alert) => alert.type === 'solid')
+  const bigBiznisAlerts = alerts.filter((alert) => alert.type === 'bigBiznis')
 
   return (
     <div className='container mx-auto p-4'>
@@ -38,7 +38,7 @@ export default function AlertsPage() {
             <CardDescription>Price below $50,000</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className='text-4xl font-bold'>{alertCounts.cheapOrder}</p>
+            <p className='text-4xl font-bold'>{alertCounts.cheap}</p>
           </CardContent>
         </Card>
 
@@ -48,7 +48,7 @@ export default function AlertsPage() {
             <CardDescription>More than 10 BTC</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className='text-4xl font-bold'>{alertCounts.solidOrder}</p>
+            <p className='text-4xl font-bold'>{alertCounts.solid}</p>
           </CardContent>
         </Card>
 
@@ -83,94 +83,5 @@ export default function AlertsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
-}
-
-function AlertTable({ alerts, title }: { alerts: any[]; title: string }) {
-  const safeFormatDistance = (timestamp: number) => {
-    try {
-      return formatDistanceToNow(timestamp, { addSuffix: true })
-    } catch (error) {
-      console.error('Error formatting date:', error, timestamp)
-      return 'recently'
-    }
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>
-          Showing alerts from the last minute ({alerts.length} alerts)
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {alerts.length === 0 ? (
-          <p className='text-center py-4 text-muted-foreground'>
-            No alerts in the last minute
-          </p>
-        ) : (
-          <div className='rounded-md border'>
-            <div className='w-full overflow-auto'>
-              <table className='w-full caption-bottom text-sm'>
-                <thead>
-                  <tr className='border-b bg-muted/50'>
-                    <th className='h-12 px-4 text-left align-middle font-medium'>
-                      Alert
-                    </th>
-                    <th className='h-12 px-4 text-left align-middle font-medium'>
-                      Price
-                    </th>
-                    <th className='h-12 px-4 text-left align-middle font-medium'>
-                      Quantity
-                    </th>
-                    <th className='h-12 px-4 text-left align-middle font-medium'>
-                      Total
-                    </th>
-                    <th className='h-12 px-4 text-left align-middle font-medium'>
-                      Time
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {alerts.map((alert) => (
-                    <tr
-                      key={alert.id}
-                      className='border-b transition-colors hover:bg-muted/50'
-                    >
-                      <td className='p-4 align-middle'>{alert.alertMessage}</td>
-                      <td className='p-4 align-middle'>
-                        $
-                        {alert.price.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </td>
-                      <td className='p-4 align-middle'>
-                        {alert.quantity.toLocaleString(undefined, {
-                          minimumFractionDigits: 8,
-                          maximumFractionDigits: 8,
-                        })}{' '}
-                        BTC
-                      </td>
-                      <td className='p-4 align-middle'>
-                        $
-                        {alert.total.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </td>
-                      <td className='p-4 align-middle'>
-                        {safeFormatDistance(alert.timestamp)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
   )
 }
